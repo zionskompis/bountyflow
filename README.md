@@ -113,15 +113,17 @@ echo "https://target.com" | ~/tools/feroxbuster -w ~/tools/SecLists/Discovery/We
 ```
 
 ##### uncover
-    ```
-    echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| tee -a uncover-target.com.log
-    ```
-    > enginees options: censys, netlas, criminalip, fofa
-
+> enginees options: censys, netlas, criminalip, fofa
+```
+echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| tee -a uncover-target.com.log
+```
+    
 ##### robtex ip info 
-    ```
-    curl https://freeapi.robtex.com/ipquery/8.8.8.8|gron
-    ```
+```
+curl https://freeapi.robtex.com/ipquery/8.8.8.8|gron
+```
+
+
 ## vulnerbility scans
 
 ###### skipfish
