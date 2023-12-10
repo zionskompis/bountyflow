@@ -1,12 +1,14 @@
-# bountyflow
-just another bug bounty 1 - 2 - 3
+
+## just another bug bounty 1 - 2 - 3 
 > Notes from @zionskompis ~ tools ~ syntax ~ examples ~ reminders ~ payloads
-##### my paths -> tools / bins
+
+#### paths
 ```
-~/tools/
-~/go/bin/
+tools=~/tools/
+gtools=~/go/bin/
 ```
-#### tokens used in tool x
+
+#### tokens used in tools
 > gitlab
 > github 
 > securitytrails
@@ -20,15 +22,6 @@ just another bug bounty 1 - 2 - 3
 
 
 
-#### golang install syntax ->go install repo@latest 
-```go install github.com/hacktheworld/hacktheworld@latest ```
-
-#### kiterunner / assetnotes -> save wordlist 
-```
->> kr wordlist list
->> kr wordlist save 2m-subdomains
-<< file saved name=2m-subdomains path=/home/nojjan/.cache/kiterunner/wordlists/2m`subdomains.txt
-```
 
 
 #### enum subdomains
@@ -43,7 +36,11 @@ subfinder -d target.com -recursive -silent -o subfinder-target.com
 
 ~/go/bin/chaos --key CHAOS_TOKEN -d target.com -o chaos-target.com
 
+findomain -t target.com -u findomain-target.com.log
 ```
+##### sublert - alerts via slack hook if new subdomain get registerd @ crt.sh. Runs on vps.
+- https://medium.com/@yassineaboukir/automated-monitoring-of-subdomains-for-fun-and-profit-release-of-sublert-634cfc5d7708
+- https://github.com/yassineaboukir/sublert
 
 ###### dorkhunter
 ```
@@ -53,6 +50,25 @@ python3 ~/tools/dorkhunter/dorks_hunter.py -d target.com -o dorkhunter-target.co
 ```
 ~/go/bin/waybackurls target.com * | tee -a waybackurls-target.com
 python3 ~/tools/waymore/waymore.py -i target.com -mode U --output-urls waymore-target.com.log
+```
+##### uncover
+> https://github.com/projectdiscovery/uncover
+```
+echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| tee -a uncover-target.com.log
+```
+
+##### check if a domain is alive
+```
+cat subdomains.log | httpx -o alive.log
+```
+#### crawl domains
+> gospider
+```
+gospider -S alive.log -o gospider-alive.log
+```
+> katana
+```
+katana -u domains -js-crawl -d 3  -H "X-Forwarded-host: 127.0.0.1" -H 'User-agent: null' -sc *target.com -output katana katana-target.com.log
 ```
 
 #### extract urls from /path 
@@ -70,7 +86,7 @@ sqlite3 ~/.config/google-chrome/Default/History "select url,title from urls" | g
 ```
 cat burp-requests.log | sed 's/someburp\.colob\.com/new\interact\.sh/m'
 ```
-### enum parameters 
+#### enum parameters 
 ##### x8
 ```
 ~/tools/x8/target/release./x8 -X POST  -u "https://target.com/" -w ~/.cache/kiterunner/wordlists/ht`parchive_parameters_top_1m_2022_12_28.txt -c 7
@@ -80,7 +96,12 @@ cat burp-requests.log | sed 's/someburp\.colob\.com/new\interact\.sh/m'
 arjun -u https://target.com/ | tee -a arjun-target.log
 ```
 
-### bruteforce files/dirs
+##### xnLinkFinder
+```
+python3 ~/tools/xnLinkFinder/xnLinkFinder.py -i endpoints-target.com -sp https://target.com/ -sf target.com -d 3 -o linkf-target.com.log -op linkf-param-target.com.log -vv
+```
+
+#### bruteforce files/dirs
 ```
 feroxbuster -k -A --smart -u https://target/ -w ~/tools/SecLists/Discovery/Web-Content/raft-large-directories.txt -o ferox-target.log
 
@@ -91,7 +112,32 @@ echo "https://target.com" | ~/tools/feroxbuster -w ~/tools/SecLists/Discovery/We
 ~/tools/kiterunner/kr scan https://target.com/ -A php-221228 -o kr.target.com.log
 ```
 
-### vulnerbility scans
+##### uncover
+    echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| tee -a uncover-target.com.log
+    > enginees options: censys, netlas, criminalip, fofa
+
+###### robtex ip info 
+curl https://freeapi.robtex.com/ipquery/8.8.8.8|gron
+
+## vulnerbility scans
+
+###### skipfish
+```
+skipfish -o skip-target.com http://target.com
+```
+
+###### nuclei
+- https://github.com/projectdiscovery/nuclei
+
+##### xsstrike 
+```
+ while read t;do echo -e "running $t\n";python3 ~/tools/XSStrike/xsstrike.py -u $t --crawl | tee -a xsstrike-target.com;done<endpoints-target.com
+```
+
+##### postMessage
+
+- postMessage-tracker
+- https://github.com/fransr/postMessage-tracker
 
 
 
@@ -108,8 +154,20 @@ echo "https://target.com" | ~/tools/feroxbuster -w ~/tools/SecLists/Discovery/We
     curl 'http://httpbin.org/base64/PGlmcmFtZSBzcmM9Imh0dHA6Ly8xMC4xMC4wLjEvc2VydmVyLXN0YXR1cyI+PC9pZnJhbWU+Cg=='
     ```
 
+- uncoder.io
 
-#### PDFs
+## reminders
+#### golang install syntax ->go install repo@latest 
+```go install github.com/hacktheworld/hacktheworld@latest ```
+
+#### kiterunner / assetnotes -> save wordlist 
+```
+>> kr wordlist list
+>> kr wordlist save 2m-subdomains
+<< file saved name=2m-subdomains path=/home/nojjan/.cache/kiterunner/wordlists/2m`subdomains.txt
+```
+
+## PDFs
 
 - http://www.cgisecurity.com/lib/HTTP-Request-Smuggling.pdf
 - http://www.ussrback.com/docs/papers/IDS/whiskerids.html
@@ -122,3 +180,11 @@ echo "https://target.com" | ~/tools/feroxbuster -w ~/tools/SecLists/Discovery/We
 
 ## Acknowledgements
  - Bug Hunters are Awesome People! 
+ 
+ 
+## License
+
+[![CC0](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/cc-zero.svg)](https://creativecommons.org/publicdomain/zero/1.0)
+
+To the extent possible under law, zionskompis has waived all copyright and
+related or neighboring rights to this work.
