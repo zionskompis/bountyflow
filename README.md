@@ -1,30 +1,9 @@
+# ~/just/another/bounty/flow/1.2.3
+-  notes / reminders  
 
-## just another bug bounty 1 - 2 - 3 
-> Notes from @zionskompis ~ tools ~ syntax ~ examples ~ reminders ~ payloads
+#
 
-#### paths
-```
-tools=~/tools/
-gtools=~/go/bin/
-```
-
-#### tokens used in tools
-> gitlab
-> github 
-> securitytrails
-> shodan 
-> binaryedge
-> chaos
-
-
-#### search engines 
-> crt.sh | ivre.rocks | vulners.com | pulsedive.com | binaryedge.io | socradar.io| fullhunt.io | publicwwww.com | urlscan.io | searchcode.com | app.netlas.io | intelx.io | leakix.net | censys.io | hunter.io | fofa.info | zoomeye.org | grep.app | app.binaryedge | onyphe.io
-
-
-
-
-
-#### enum subdomains
+## subdomains
 ```
 ~/go/bin/assetfinder target.com -subs-only | tee -a assetfinder-target.com.log
 
@@ -38,15 +17,27 @@ subfinder -d target.com -recursive -silent -o subfinder-target.com
 
 findomain -t target.com -u findomain-target.com.log
 ```
-##### sublert - alerts via slack hook if new subdomain get registerd @ crt.sh. Runs on vps.
+#### cloudrecon  > https://github.com/g0ldencybersec/CloudRecon
+
+##### scrape iprange  
+    ~/go/bin/CloudRecon  scrape  -i 10.0.0.1/24
+##### store result in local db
+    # creates a db if no db exists or if not specified
+    ~/go/bin/CloudRecon  store -i 192.168.1.1/24
+##### read local db
+    ~/go/bin/CloudRecon retr -all 
+##### parse out domains from local db (tweaking may be needed)
+    ~/go/bin/CloudRecon retr -all | gron | grep -iho "\".*\.target\.com" | cut -f2 -d'"'| tr "," "\\n" | sort -u | tee -a cloudrecon-target.com
+
+#### sublert - alerts via slack hook if new subdomain get registerd @ crt.sh. Runs on vps.
 - https://medium.com/@yassineaboukir/automated-monitoring-of-subdomains-for-fun-and-profit-release-of-sublert-634cfc5d7708
 - https://github.com/yassineaboukir/sublert
 
-###### dorkhunter
+#### dorkhunter
 ```
 python3 ~/tools/dorkhunter/dorks_hunter.py -d target.com -o dorkhunter-target.com.log
 ```
-##### way|/more|/backurls
+#### way|/more|/backurls
 ```
 ~/go/bin/waybackurls target.com * | tee -a waybackurls-target.com
 python3 ~/tools/waymore/waymore.py -i target.com -mode U --output-urls waymore-target.com.log
@@ -61,16 +52,20 @@ echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| t
 ```
 cat subdomains.log | httpx -o alive.log
 ```
-#### crawl domains
-> gospider
-```
-gospider -S alive.log -o gospider-alive.log
-```
-> katana
-```
-katana -u domains -js-crawl -d 3  -H "X-Forwarded-host: 127.0.0.1" -H 'User-agent: null' -sc *target.com -output katana katana-target.com.log
-```
+## crawl domains
 
+- gospider
+    ```
+    gospider -S alive.log -o gospider-alive.log
+    ```
+- katana
+    ```
+    katana -u domains -js-crawl -d 3  -H "X-Forwarded-host: 127.0.0.1" -H 'User-agent: null' -sc *target.com -output katana katana-target.com.log
+    ```
+- [crawley](https://github.com/s0rg/crawley) 
+    ```
+    crawley  -skip-ssl -silent  -js -brute  -depth -1 -all 'https://webtransfer.post.ch/' | grep -viE .".gif|.jpg|.gif|.css|.png|.jpeg"| grep -i '^http'
+    ```
 #### extract urls from /path 
 ```
 egrep -rhaio "(http|https)://[a-zA-Z0-9./?=_-]*" * | grep target.com
@@ -86,9 +81,13 @@ sqlite3 ~/.config/google-chrome/Default/History "select url,title from urls" | g
 ```
 cat burp-requests.log | sed 's/someburp\.colob\.com/new\interact\.sh/m'
 ```
-#### enum parameters 
+## enum parameters 
 ##### x8
 ```
+# GET
+~/tools/x8/target/release/x8 -u 'https://target.com/'  -w ~/.cache/kiterunner/wordlists/httparchive_parameters_top_1m_2022_12_28.txt
+
+# POST
 ~/tools/x8/target/release./x8 -X POST  -u "https://target.com/" -w ~/.cache/kiterunner/wordlists/ht`parchive_parameters_top_1m_2022_12_28.txt -c 7
 ```
 ##### arjun
@@ -113,16 +112,11 @@ echo "https://target.com" | ~/tools/feroxbuster -w ~/tools/SecLists/Discovery/We
 ```
 
 ##### uncover
-> enginees options: censys, netlas, criminalip, fofa
-```
-echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| tee -a uncover-target.com.log
-```
-    
-##### robtex ip info 
-```
-curl https://freeapi.robtex.com/ipquery/8.8.8.8|gron
-```
+    echo 'target.com' | ~/tools/uncover/uncover -e censys -v -f ip,port,host 2>&1| tee -a uncover-target.com.log
+    > enginees options: censys, netlas, criminalip, fofa
 
+###### robtex ip info 
+curl https://freeapi.robtex.com/ipquery/8.8.8.8|gron
 
 ## vulnerbility scans
 
@@ -144,9 +138,13 @@ skipfish -o skip-target.com http://target.com
 - postMessage-tracker
 - https://github.com/fransr/postMessage-tracker
 
+## framework
+#### [reconwtf](https://github.com/six2dez/reconftw)
+
+##### tokens in use: securitytrails, fofa, gitlab, github, securitytrails, shodan, binaryedge, chaos, WHOISXML
 
 
-### Online tools / resources
+## Online tools / resources
 - httpbin.org 
     > eg genrate b64 payload 
     ```
@@ -169,8 +167,31 @@ skipfish -o skip-target.com http://target.com
 ```
 >> kr wordlist list
 >> kr wordlist save 2m-subdomains
-<< file saved name=2m-subdomains path=/home/nojjan/.cache/kiterunner/wordlists/2m`subdomains.txt
+<< file saved name=2m-subdomains path=/home/nojjan/.cache/kiterunner/wordlists/2msubdomains.txt
 ```
+## search engines 
+- crt.sh 
+- ivre.rocks 
+- vulners.com 
+- pulsedive.com 
+- binaryedge.io 
+- socradar.io 
+- fullhunt.io 
+- publicwwww.com 
+- urlscan.io 
+- searchcode.com 
+- app.netlas.io 
+- intelx.io 
+- leakix.net 
+- censys.io 
+- hunter.io 
+- fofa.info 
+- zoomeye.org 
+- grep.app 
+- app.binaryedge 
+- onyphe.io
+
+
 
 ## PDFs
 
@@ -183,13 +204,10 @@ skipfish -o skip-target.com http://target.com
 - https://msdn.microsoft.com/en-us/library/system.text.encodinginfo.getencoding.aspx
 
 
-## Acknowledgements
+### Acknowledgements
  - Bug Hunters are Awesome People! 
  
  
-## License
+### License
 
 [![CC0](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/cc-zero.svg)](https://creativecommons.org/publicdomain/zero/1.0)
-
-To the extent possible under law, zionskompis has waived all copyright and
-related or neighboring rights to this work.
