@@ -1,3 +1,4 @@
+
 # ~/just/another/bounty/flow/1.2.3
 -  notes / reminders  
 
@@ -5,18 +6,36 @@
 
 ## subdomains
 ```
+# securitytrails(api)
+curl 'https://api.securitytrails.com/v1/domain/target.com/subdomains?children_only=false&include_inactive=true' -H 'accept: application/json' -H 'apikey: API_KEY' | gron | awk -F'"' '{print $2".target.com"}' |tee -a securitytrails-target.com.log
+```
+```
+# assetfinder
 ~/go/bin/assetfinder target.com -subs-only | tee -a assetfinder-target.com.log
-
+```
+```
+# haktrails
 echo "target.com"| ~/go/bin/haktrails subdomains | tee -a haktrails-sub-target.com.log
+```
 
+```
+# subfinder
 subfinder -d target.com -recursive -silent -o subfinder-target.com
-
+```
+```
+# github-subdomains
 ~/go/bin/github-subdomains -d target.com -o gitsub-target.com -t GITHUB_TOKEN
+```
 
+```
+# chaos(api)
 ~/go/bin/chaos --key CHAOS_TOKEN -d target.com -o chaos-target.com
-
+```
+```
+# findomain
 findomain -t target.com -u findomain-target.com.log
 ```
+
 #### cloudrecon  > https://github.com/g0ldencybersec/CloudRecon
 
 ##### scrape iprange  
@@ -64,8 +83,32 @@ cat subdomains.log | httpx -o alive.log
     ```
 - [crawley](https://github.com/s0rg/crawley) 
     ```
-    crawley  -skip-ssl -silent  -js -brute  -depth -1 -all 'https://webtransfer.post.ch/' | grep -viE .".gif|.jpg|.gif|.css|.png|.jpeg"| grep -i '^http'
+    crawley  -skip-ssl -silent  -js -brute  -depth -1 -all 'https://target.com/' | grep -viE .".gif|.jpg|.gif|.css|.png|.jpeg"| grep -i '^http'
     ```
+
+## build a quick custom wordlist  
+
+```
+# paths
+cat target.com-endspoints.log | ~/go/bin/unfurl format %p | tr "/" "\\n" | cut -f 1 -d "." | sort -u | tee -a wordlist-target.com
+
+# keys
+cat target.com-endspoints.log | ~/go/bin/unfurl keys| tee -a  wordlist-target.com
+
+python3 ~/tools/xnLinkFinder/xnLinkFinder.py -i endpoints-target.com -sp https://target.com/ -sf target.com -d 3 -o xnLinkFinder-target.com.log -op xnLinkFinder-param-target.com.log -vv
+
+# add found parameters to wordlist
+cat xnLinkFinder-param-target.com.log | sort -u | tee -a wordlist-target.com
+
+# parse paths from linkf-target.com.log
+cat xnLinkFinder-target.com.log  | ~/go/bin/unfurl format %p | tr "/" "\\n" | cut -f 1 -d "." | sort -u | tee -a wordlist-target.com
+
+# add words used in subdomains 
+cat target.com-ends.log xnLinkFinder-target.com.log | ~/go/bin/unfurl format %S | tr "." "\\n" | grep -vi www | sort -u | tee -a wordlist-target.com
+
+# remove dups
+sort -uo wordlist-target.com wordlist-target.com
+```
 #### extract urls from /path 
 ```
 egrep -rhaio "(http|https)://[a-zA-Z0-9./?=_-]*" * | grep target.com
@@ -81,6 +124,7 @@ sqlite3 ~/.config/google-chrome/Default/History "select url,title from urls" | g
 ```
 cat burp-requests.log | sed 's/someburp\.colob\.com/new\interact\.sh/m'
 ```
+
 ## enum parameters 
 ##### x8
 ```
@@ -119,6 +163,9 @@ echo "https://target.com" | ~/tools/feroxbuster -w ~/tools/SecLists/Discovery/We
 curl https://freeapi.robtex.com/ipquery/8.8.8.8|gron
 
 ## vulnerbility scans
+
+#### dnsReaper
+python3 main.py file --filename subdomains.target.com.log
 
 ###### skipfish
 ```
